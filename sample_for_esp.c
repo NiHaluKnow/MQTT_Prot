@@ -2,10 +2,10 @@
 #include <PubSubClient.h>
 
 // Wi-Fi credentials
-const char* ssid     = "Wokwi-GUEST"; // Wokwi default guest Wi-Fi
+const char* ssid     = "Wokwi-GUEST"; // Wokwi default guest Wi-Fi for ESP32
 const char* password = "";
 
-// MQTT broker (public broker example)
+// MQTT broker (public broker example) - you can use any public broker or set up your own broker and put its address here
 const char* mqtt_server = "broker.hivemq.com";
 
 WiFiClient espClient;
@@ -25,7 +25,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
   Serial.print("] : ");
   Serial.println(message);
   
-  // TODO: Put appropriate messages inside the conditions
+  // Put appropriate messages inside the conditions
   if (message == "ON") {
     digitalWrite(ledPin, HIGH);  // Turn LED ON
   } else if (message == "OFF") {
@@ -36,7 +36,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
 void reconnect() {
   while (!client.connected()) {
     Serial.print("Connecting to MQTT…");
-    const char* topic = "buet/cse/2105105/led"; // TODO: The topic will be "led" under your id under "cse" under "buet"
+    const char* topic = "buet/cse/2105105/led"; // The topic will be "led" under your id under "cse" under "buet" - you can change it as you like but make sure to use the same topic in the Python code for publishing messages.
     if (client.connect("ESP32_Wokwi_LED")) {
       Serial.println("connected");
       client.subscribe(topic);
