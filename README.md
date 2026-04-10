@@ -1,46 +1,54 @@
-# MQTT LED Control (ESP32 + Python)
+# MQTT LED Control with ESP32 and Python
 
-This project demonstrates basic MQTT communication between:
-- an ESP32 client that subscribes to LED control messages, and
-- a Python script that publishes LED commands from keyboard input.
+Control an ESP32 LED over MQTT using a simple Python command-line publisher.
 
-The LED state on ESP32 is controlled by messages sent from the Python program(sample_for_control.py)
+This project demonstrates a basic IoT publish-subscribe workflow:
+- ESP32 subscribes to an MQTT topic and toggles LED state.
+- Python script publishes `ON` and `OFF` messages from keyboard input.
 
-## Project Files
+## Features
 
-- `sample_for_esp.c`: ESP32 MQTT subscriber code (turns LED ON/OFF).
-- `sample_for_control.py`: Python MQTT publisher code (sends ON/OFF).
+- Lightweight MQTT-based LED control
+- Works with real ESP32 hardware or Wokwi simulation
+- Simple keyboard-driven Python controller
+- Uses a public broker for quick testing
 
-## MQTT Broker
+## Project Structure
 
-- Broker host: `broker.hivemq.com`
+- `sample_for_esp.c`: ESP32 subscriber code (`WiFi` + `PubSubClient`)
+- `sample_for_control.py`: Python publisher script (`paho-mqtt`)
+- `WOKWI.zip`: Wokwi simulation files
+- `IoT Offline.pdf`: assignment/reference material
+
+## MQTT Configuration
+
+- Broker: `broker.hivemq.com`
 - Port: `1883`
-- Protocol: MQTT over TCP (no TLS in this demo)
-- Authentication: none (public broker)
+- Topic: `buet/cse/2105105/led`
+- Protocol: MQTT over TCP (no TLS)
 
-This project uses a public broker for easy testing. Because it is shared, messages may be delayed occasionally and topic collisions are possible if someone else uses the same topic.
-
-For a production setup, use a private broker with authentication and TLS.
+Both publisher and subscriber must use the exact same topic.
 
 ## How It Works
 
-- Python sends:
-  - `ON` when you press `y`
-  - `OFF` when you press `n`
-  - exits when you press `q`
-- ESP32 listens to the topic and:
-  - sets LED pin HIGH for `ON`
-  - sets LED pin LOW for `OFF`
+1. ESP32 connects to Wi-Fi and subscribes to `buet/cse/2105105/led`.
+2. Python script waits for user input.
+3. Input commands publish messages:
+	- `y` publishes `ON`
+	- `n` publishes `OFF`
+	- `q` exits the script
+4. ESP32 receives payload and sets onboard LED:
+	- `ON` -> `HIGH`
+	- `OFF` -> `LOW`
 
 ## Requirements
 
 ### ESP32 Side
 
-- ESP32 board (or Wokwi ESP32 simulation)
+- ESP32 board or Wokwi ESP32
 - Arduino IDE or PlatformIO
-- Libraries:
-  - `WiFi` (ESP32 core)
-  - `PubSubClient`
+- ESP32 core libraries
+- `PubSubClient` library
 
 ### Python Side
 
@@ -53,34 +61,42 @@ Install Python dependency:
 pip install paho-mqtt
 ```
 
-## Run Instructions
+## Running the Project
 
-1. Flash/upload the ESP32 code from `sample_for_esp.c`.
-2. Open Serial Monitor (baud: `115200`) to view connection and messages.
+1. Upload `sample_for_esp.c` to ESP32 (or run in Wokwi).
+2. Open Serial Monitor at `115200` baud.
 3. Run the Python controller:
 
 ```bash
 python3 sample_for_control.py
 ```
 
-4. Use keyboard input in Python terminal:
-   - `y` -> publish `ON`
-   - `n` -> publish `OFF`
-   - `q` -> quit
-
-## Notes
-
-- MQTT broker used: `broker.hivemq.com` (public broker).
-- Public brokers may occasionally be busy or rate-limited.
-- Keep internet connection active for both sides.
+4. Enter commands in terminal:
+	- `y` to turn LED ON
+	- `n` to turn LED OFF
+	- `q` to quit
 
 ## Troubleshooting
 
-- No LED response:
-  - Verify both files use the exact same topic.
-  - Check ESP32 is connected to Wi-Fi.
-  - Confirm MQTT broker and port (`1883`).
-- Python script fails to import mqtt:
-  - Reinstall dependency: `pip install paho-mqtt`
-- ESP32 not connecting in Wokwi:
-  - Keep SSID/password as configured in the code for Wokwi guest network.
+- LED does not change:
+	- Confirm both files use the same topic and broker.
+	- Check ESP32 Wi-Fi connection in Serial Monitor.
+	- Verify broker connectivity (`broker.hivemq.com:1883`).
+
+- Python import error (`No module named paho`):
+	- Reinstall package with `pip install paho-mqtt`.
+
+- MQTT message not received:
+	- Public brokers can be busy; retry after a short wait.
+	- Use a unique topic if collisions occur.
+
+## Future Improvements
+
+- Add authenticated/TLS MQTT broker support
+- Add retained messages and QoS handling
+- Add status feedback from ESP32 to Python
+- Build a web or mobile dashboard for control
+
+## License
+
+This project is licensed under the MIT License. See `LICENSE` for details.
