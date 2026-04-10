@@ -4,20 +4,23 @@ This project demonstrates basic MQTT communication between:
 - an ESP32 client that subscribes to LED control messages, and
 - a Python script that publishes LED commands from keyboard input.
 
-The LED state on ESP32 is controlled by messages sent from the Python program.
+The LED state on ESP32 is controlled by messages sent from the Python program(sample_for_control.py)
 
 ## Project Files
 
 - `sample_for_esp.c`: ESP32 MQTT subscriber code (turns LED ON/OFF).
 - `sample_for_control.py`: Python MQTT publisher code (sends ON/OFF).
 
-## MQTT Topic
+## MQTT Broker
 
-Both programs use the same topic:
+- Broker host: `broker.hivemq.com`
+- Port: `1883`
+- Protocol: MQTT over TCP (no TLS in this demo)
+- Authentication: none (public broker)
 
-`buet/cse/2105105/led`
+This project uses a public broker for easy testing. Because it is shared, messages may be delayed occasionally and topic collisions are possible if someone else uses the same topic.
 
-If you change the topic in one file, update the other file to match.
+For a production setup, use a private broker with authentication and TLS.
 
 ## How It Works
 
